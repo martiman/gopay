@@ -1,5 +1,5 @@
 {
-    "name": "Markette/Gopay",
+    "name": "martiman/Gopay",
     "description": "Integrace platebního systému Gopay pro Nette Framework.",
     "keywords": ["nette", "eshop", "payment", "gopay"],
     "homepage": "http://github.com/Markette/Gopay",
