@@ -71,6 +71,7 @@ class ReturnedPayment extends Payment
 			);
 			return FALSE;
 		} catch (\Exception $e) {
+			\Tracy\Debugger::log($e, \Tracy\Debugger::ERROR);			
 			return TRUE;
 		}
 	}

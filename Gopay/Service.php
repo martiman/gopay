@@ -31,20 +31,23 @@ use Nette\DI;
  */
 class Service extends Nette\Object
 {
-	/** @const Platba kartou - Komerční banka, a.s. - Global Payments */
-	const METHOD_CARD_GPKB = 'eu_gp_kb';
-	/** @const Platba kartou - GoPay - platební karty B */
-	const METHOD_CARD_GPB = 'eu_om';
-	/** @const Paysafecard - kupón */
-	const METHOD_PAYSAFECARD = 'eu_psc';
-	/** @const Elektronická peněženka PayPal */
-	const METHOD_PAYPAL = 'eu_paypal';
-	/** @const Terminály České pošty, s.p. a spol. Sazka, a.s. */
+
+	/** @const Platba kartou - Česká spořitelna, a.s. E-commerce 3-D Secure */
+	const METHOD_CARD_CESKAS = 'cz_cs_c';
+	//const METHOD_CARD_CESKAS = 'cz_cs_kb';
+	/** @const Platba kartou - UniCredit Bank - Global payments */
+	const METHOD_CARD_UNICREDITB = 'eu_gp_u';
+	/** @const Platba kartou - KB */
+	const METHOD_CARD_KB = 'eu_gp_kb';
+	
+
+	/** @const Terminál České pošty, Sazka a.s. */
 	const METHOD_SUPERCASH = 'SUPERCASH';
 	/** @const Mobilní telefon - Premium SMS */
 	const METHOD_PREMIUMSMS = 'eu_pr_sms';
 	/** @const Mobilní telefon - platební brána operátora */
 	const METHOD_MPLATBA = 'cz_mp';
+
 	/** @const Platební tlačítko - Platba KB - Mojeplatba - Internetové bankovnictví Komerční banky a.s. */
 	const METHOD_KOMERCNIB = 'cz_kb';
 	/** @const Platební tlačítko - Platba RB - ePlatby - Internetové bankovnictví Raiffeisenbank a.s. */
@@ -53,30 +56,16 @@ class Service extends Nette\Object
 	const METHOD_MBANK = 'cz_mb';
 	/** @const Platební tlačítko - Platba Fio Banky - Internetové bankovnictví Fio banky */
 	const METHOD_FIOB = 'cz_fb';
-	/** @const Platební tlačítko - Platba Česká spořitelna - Internetové bankovnictví České spořitelny */
-	const METHOD_CSAS = 'cz_csas';
+	/** @const Platební tlačítko - Platba UniCredit Bank - uniplatba - Internetové bankovnictví UniCredit Bank a.s. */
+	const METHOD_UNICREDITB = 'sk_uni';
+	/** @const Platební tlačítko - Platba SLSP - sporopay - Internetové bankovnictví Slovenská sporiteľňa, a. s. */
+	const METHOD_SLOVENSKAS = 'sk_sp';
 
 	/** @const Běžný bankovní převod */
 	const METHOD_TRANSFER = 'eu_bank';
 	/** @const Gopay - Elektronická peněženka. */
 	const METHOD_GOPAY = 'eu_gp_w';
-	
-	/** @const Platební tlačítko - Platba UniCredit Bank - uniplatba - Internetové bankovnictví UniCredit Bank a.s. */
-	const METHOD_SK_UNICREDITB = 'sk_uni';
-	/** @const Platební tlačítko - Platba SLSP - sporopay - Internetové bankovnictví Slovenská sporiteľňa, a. s. */
-	const METHOD_SK_SLOVENSKAS = 'sk_sp';
-	/** @const Platební tlačítko - Platba Všeobecná úverová banka - Internetové bankovnictví Všeobecná úverová banka, a.s. */
-	const METHOD_SK_VUB = 'sk_vubbank';
-	/** @const Platební tlačítko - Platba Tatra banka - Internetové bankovnictví Tatra banka a.s. */
-	const METHOD_SK_TATRA = 'sk_tatrabank';
-	/** @const Platební tlačítko - Platba Poštová banka - Internetové bankovnictví Poštová banka a.s. */
-	const METHOD_SK_PAB = 'sk_pabank';
-	/** @const Platební tlačítko - Platba Sberbank Slovensko - Internetové bankovnictví Sberbank Slovensko, a.s. */
-	const METHOD_SK_SBERB = 'sk_sberbank';
-	/** @const Platební tlačítko - Platba Československá obchodná banka - Internetová bankovnictví Československá obchodná banka, a.s. */
-	const METHOD_SK_CSOB = 'sk_csob';
-	/** @const Platební tlačítko - Platba OTP banka Slovensko, a.s. - Internetové bankovnictví OTP banka Slovensko, a.s. */
-	const METHOD_SK_OPTB = 'sk_otpbank';
+
 
 	/** @const Czech koruna */
 	const CURRENCY_CZK = 'CZK';
@@ -273,6 +262,7 @@ class Service extends Nette\Object
 	 */
 	public function allowChannel($channel)
 	{
+		$this->loadGopayChannels();
 		if (isset($this->allowedChannels[$channel])) {
 			return $this;
 		}
@@ -297,6 +287,7 @@ class Service extends Nette\Object
 	 */
 	public function denyChannel($channel)
 	{
+		$this->loadGopayChannels();
 		if (isset($this->deniedChannels[$channel])) {
 			return $this;
 		}
@@ -503,6 +494,30 @@ class Service extends Nette\Object
 
 		return $button;
 	}
+
+
+
+	/**
+	 * Loads all gopay channels
+	 *
+	 * @throws GopayException on failed communication with WS
+	 */
+	private function loadGopayChannels()
+	{
+		if ($this->fetchedChannels) {
+			return;
+		}
+
+		$this->fetchedChannels = TRUE;
+		$methodList = GopaySoap::paymentMethodList();
+		if ($methodList === NULL) {
+			throw new GopayFatalException('Loading of native Gopay payment channels failed due to communication with WS.');
+		}
+		foreach ($methodList as $method) {
+			$this->addRawChannel($method, FALSE);
+		}
+	}
+
 
 
 	/**
