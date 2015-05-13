@@ -1,16 +1,16 @@
-ï»¿{
+{
     "name": "martiman/gopay",
-    "description": "Integrace platebnÃ­ho systÃ©mu Gopay pro Nette Framework.",
+    "description": "Integrace platebního systému Gopay pro Nette Framework.",
     "keywords": ["nette", "eshop", "payment", "gopay"],
     "homepage": "http://github.com/Markette/Gopay",
     "license": "New BSD",
     "authors": [
         {
-            "name": "VojtÄ›ch DobeÅ¡",
+            "name": "Vojtìch Dobeš",
             "email": "me@vojtechdobes.com"
         },
         {
-            "name": "Jan Å krÃ¡Å¡ek",
+            "name": "Jan Škrášek",
             "email": "hrach.cz@gmail.com"
         }
     ],
